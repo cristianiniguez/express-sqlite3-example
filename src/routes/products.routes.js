@@ -1,28 +1,38 @@
 const { Router } = require('express');
 
+const ProductsService = require('../services/products.services');
+const productsService = new ProductsService();
+
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.send('getting products');
+router.get('/', async (req, res) => {
+  const products = await productsService.getProducts();
+  res.send({ data: products, message: 'products listed' });
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  res.send(`getting product ${id}`);
+  const product = await productsService.getProduct({ id });
+  res.send({ data: product, message: 'product listed' });
 });
 
-router.post('/', (req, res) => {
-  res.send('creating product');
+router.post('/', async (req, res) => {
+  const data = req.body;
+  const createdProduct = await productsService.createProduct({ data });
+  res.send({ data: createdProduct, message: 'product created' });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  res.send(`updating product ${id}`);
+  const data = req.body;
+  await productsService.updateProduct({ id, data });
+  res.send({ message: 'product updated' });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
-  res.send(`deleting product ${id}`);
+  await productsService.deleteProduct({ id });
+  res.send({ message: 'product deleted' });
 });
 
 module.exports = router;
